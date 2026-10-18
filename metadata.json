@@ -1,0 +1,6 @@
+{
+  "name": "Jai Kisan",
+  "description": "Farmer agri-tech mobile platform in Telugu and English with daily mandi prices, price trend graphs, logistics transport planner, nearest market locator, cold storage finder, live crop photo upload, and AI voice assistant.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
