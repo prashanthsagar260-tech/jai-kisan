@@ -29,8 +29,10 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Compress
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.MedicalServices
 import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material.icons.filled.Science
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Verified
 import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material.icons.filled.Warning
@@ -39,6 +41,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
@@ -47,14 +50,21 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SecondaryTabRow
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -77,6 +87,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CropPhotoScreen(
     viewModel: KisanViewModel,
@@ -88,6 +99,10 @@ fun CropPhotoScreen(
     val isDiagnosing by viewModel.isDiagnosingDisease.collectAsState()
     val diagnosisResult by viewModel.diseaseDiagnosisResult.collectAsState()
     val diagnosingUri by viewModel.diagnosingImageUri.collectAsState()
+
+    var activeSubTab by remember { mutableIntStateOf(0) } // 0 = Community Gallery, 1 = Upload & Doctor
+    val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
 
     var cropNameInput by remember { mutableStateOf("మిర్చి (Chilli)") }
     var notesInput by remember { mutableStateOf("") }
@@ -111,13 +126,62 @@ fun CropPhotoScreen(
         }
     }
 
-    LazyColumn(
-        modifier = modifier
-            .fillMaxSize()
-            .testTag("crop_photo_screen_list"),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
+    Box(modifier = modifier.fillMaxSize()) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            // Main Top Sub-Tab Switcher: Community Gallery vs Crop Doctor Upload
+            SecondaryTabRow(
+                selectedTabIndex = activeSubTab,
+                containerColor = MaterialTheme.colorScheme.surface,
+                contentColor = AgriGreen,
+                modifier = Modifier.testTag("crop_screen_tab_row")
+            ) {
+                Tab(
+                    selected = activeSubTab == 0,
+                    onClick = { activeSubTab = 0 },
+                    text = {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(imageVector = Icons.Default.PhotoLibrary, contentDescription = null, modifier = Modifier.size(16.dp))
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = if (language == AppLanguage.TELUGU) "రైతుల గ్యాలరీ" else "Community Gallery",
+                                fontWeight = if (activeSubTab == 0) FontWeight.Bold else FontWeight.Medium
+                            )
+                        }
+                    },
+                    modifier = Modifier.testTag("tab_community_gallery")
+                )
+                Tab(
+                    selected = activeSubTab == 1,
+                    onClick = { activeSubTab = 1 },
+                    text = {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(imageVector = Icons.Default.MedicalServices, contentDescription = null, modifier = Modifier.size(16.dp))
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = if (language == AppLanguage.TELUGU) "పంట డాక్టర్ & అప్‌లోడ్" else "Doctor & My Uploads",
+                                fontWeight = if (activeSubTab == 1) FontWeight.Bold else FontWeight.Medium
+                            )
+                        }
+                    },
+                    modifier = Modifier.testTag("tab_crop_doctor")
+                )
+            }
+
+            if (activeSubTab == 0) {
+                CommunityGalleryScreen(
+                    viewModel = viewModel,
+                    modifier = Modifier.weight(1f),
+                    onNavigateToUploadDoctor = { activeSubTab = 1 }
+                )
+            } else {
+                LazyColumn(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                        .testTag("crop_photo_screen_list"),
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
         // Upload & ML Analysis Card
         item {
             Card(
@@ -361,7 +425,29 @@ fun CropPhotoScreen(
                     diagnosis = diagnosisResult!!,
                     language = language,
                     onReadAloud = { viewModel.readAloudInTelugu(diagnosisResult!!.spokenSummaryTe) },
-                    onDismiss = { viewModel.clearDiseaseDiagnosis() }
+                    onDismiss = { viewModel.clearDiseaseDiagnosis() },
+                    onShareToCommunity = {
+                        val diag = diagnosisResult!!
+                        viewModel.shareCropPhotoToCommunity(
+                            cropName = cropNameInput,
+                            variety = "రైతు పంట నమూనా",
+                            farmerName = "మీరు (రైతు)",
+                            village = "స్థానిక గ్రామం",
+                            district = "తెలంగాణ / ఆంధ్రప్రదేశ్",
+                            imageUrlOrUri = diagnosingUri?.toString() ?: "https://images.unsplash.com/photo-1588252303782-cb80119abd6d?w=800&q=80",
+                            notes = "AI పంట డాక్టర్ తెగులు నిర్ధారణ: ${diag.diseaseNameTe} (${diag.severityLevelTe}). సేంద్రీయ నివారణ: ${diag.organicRemedyTe}",
+                            grade = "వ్యాధి నివారణ దశ (Under Treatment)",
+                            attachDiagnosis = true
+                        )
+                        coroutineScope.launch {
+                            snackbarHostState.showSnackbar(
+                                if (language == AppLanguage.TELUGU)
+                                    "తెగులు నివేదిక రైతుల గ్యాలరీలో పంచుకోబడింది!"
+                                else
+                                    "Pathology report shared to Community Gallery!"
+                            )
+                        }
+                    }
                 )
             }
         }
@@ -416,6 +502,24 @@ fun CropPhotoScreen(
                     onDiagnose = {
                         val uri = if (photo.imagePathOrUri.isNotBlank()) Uri.parse(photo.imagePathOrUri) else null
                         viewModel.diagnoseCropImage(uri, photo.cropName, autoSpeak = true)
+                    },
+                    onShareToCommunity = {
+                        viewModel.shareLocalCropPhotoToCommunity(
+                            photo = photo,
+                            farmerName = "మీరు (రైతు)",
+                            village = "స్థానిక గ్రామం",
+                            district = "తెలంగాణ / ఆంధ్రప్రదేశ్",
+                            variety = "రైతు నాణ్యమైన పంట",
+                            notes = photo.notes.ifBlank { "నా పొలంలో పండించిన నాణ్యమైన పంట నమూనా." }
+                        )
+                        coroutineScope.launch {
+                            snackbarHostState.showSnackbar(
+                                if (language == AppLanguage.TELUGU)
+                                    "మీ పంట ఫోటో రైతుల గ్యాలరీలో విజయవంతంగా పంచుకోబడింది!"
+                                else
+                                    "Photo shared to Community Gallery!"
+                            )
+                        }
                     }
                 )
             }
@@ -426,6 +530,16 @@ fun CropPhotoScreen(
         }
     }
 }
+}
+
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 16.dp)
+        )
+    }
+}
 
 @Composable
 fun CropDiseaseDiagnosisCard(
@@ -433,6 +547,7 @@ fun CropDiseaseDiagnosisCard(
     language: AppLanguage,
     onReadAloud: () -> Unit,
     onDismiss: () -> Unit,
+    onShareToCommunity: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val isSevere = diagnosis.severityLevelEn.contains("Severe", ignoreCase = true)
@@ -653,6 +768,25 @@ fun CropDiseaseDiagnosisCard(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Button(
+                onClick = onShareToCommunity,
+                colors = ButtonDefaults.buttonColors(containerColor = HarvestGold, contentColor = Color.Black),
+                shape = RoundedCornerShape(10.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("share_diagnosis_card_button")
+            ) {
+                Icon(imageVector = Icons.Default.Share, contentDescription = null, modifier = Modifier.size(16.dp))
+                Spacer(modifier = Modifier.width(6.dp))
+                Text(
+                    text = if (language == AppLanguage.TELUGU) "రైతుల గ్యాలరీలో ఈ నివేదికను పంచుకోండి" else "Share Report to Community Gallery",
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.Bold
+                )
+            }
         }
     }
 }
@@ -663,6 +797,7 @@ fun CropPhotoItemCard(
     language: AppLanguage,
     onDelete: () -> Unit,
     onDiagnose: () -> Unit,
+    onShareToCommunity: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val dateStr = remember(photo.timestamp) {
@@ -755,26 +890,54 @@ fun CropPhotoItemCard(
 
                 Spacer(modifier = Modifier.height(6.dp))
 
-                // Diagnose button for this photo item
-                OutlinedButton(
-                    onClick = onDiagnose,
-                    shape = RoundedCornerShape(8.dp),
-                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp),
-                    modifier = Modifier.height(28.dp)
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Science,
-                        contentDescription = null,
-                        tint = AgriGreen,
-                        modifier = Modifier.size(14.dp)
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text = if (language == AppLanguage.TELUGU) "నిర్ధారించు (ML)" else "Diagnose (ML)",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = AgriGreen,
-                        fontWeight = FontWeight.Bold
-                    )
+                    // Diagnose button for this photo item
+                    OutlinedButton(
+                        onClick = onDiagnose,
+                        shape = RoundedCornerShape(8.dp),
+                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp),
+                        modifier = Modifier.height(28.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Science,
+                            contentDescription = null,
+                            tint = AgriGreen,
+                            modifier = Modifier.size(14.dp)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = if (language == AppLanguage.TELUGU) "నిర్ధారించు (ML)" else "Diagnose (ML)",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = AgriGreen,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+
+                    // Share to Community Gallery button
+                    Button(
+                        onClick = onShareToCommunity,
+                        shape = RoundedCornerShape(8.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = HarvestGold, contentColor = Color.Black),
+                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp),
+                        modifier = Modifier
+                            .height(28.dp)
+                            .testTag("share_item_button_${photo.id}")
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Share,
+                            contentDescription = null,
+                            modifier = Modifier.size(12.dp)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = if (language == AppLanguage.TELUGU) "గ్యాలరీలో షేర్" else "Share to Gallery",
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                 }
             }
 

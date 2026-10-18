@@ -78,7 +78,25 @@ object AppStrings {
         "severity" to "తీవ్రత స్థాయి",
         "pathogen_type" to "తెగులు స్వభావం",
         "confidence" to "మోడల్ ఖచ్చితత్వం",
-        "sample_test_title" to "త్వరిత పరీక్ష (నమూనా పంటలు):"
+        "sample_test_title" to "త్వరిత పరీక్ష (నమూనా పంటలు):",
+        "tab_gallery" to "రైతుల గ్యాలరీ",
+        "gallery_title" to "రైతుల పంటల గ్యాలరీ",
+        "gallery_subtitle" to "తోటి రైతుల పంటలు చూడండి, మీ పంట ఫోటోలు పంచుకోండి",
+        "share_crop_photo" to "+ మీ పంటను పంచుకోండి",
+        "all_farmers" to "అందరి రైతులు",
+        "my_shares" to "నా పంట ఫోటోలు",
+        "top_quality" to "ఉత్తమ పంటలు (A-Grade)",
+        "disease_alerts" to "తెగుళ్ల నివారణ సలహాలు",
+        "like_helpful" to "మెచ్చారు",
+        "comments" to "సలహాలు & ప్రశ్నలు",
+        "write_comment" to "తోటి రైతుకు మీ సలహా లేదా ప్రశ్న రాయండి...",
+        "post_comment" to "పంపండి",
+        "share_to_community" to "🌐 రైతుల గ్యాలరీలో షేర్ చేయండి",
+        "shared_success" to "మీ పంట ఫోటో రైతుల గ్యాలరీలో విజయవంతంగా జతచేయబడింది!",
+        "farmer_name_label" to "మీ పేరు (రైతు పేరు)",
+        "village_label" to "గ్రామం / మండలం",
+        "variety_label" to "పంట రకం / విత్తనం",
+        "notes_label" to "రైతుల కోసం మీ అనుభవాలు / సలహాలు"
     )
 
     private val englishStrings = mapOf(
@@ -148,6 +166,24 @@ object AppStrings {
         "severity" to "Severity Level",
         "pathogen_type" to "Pathogen Type",
         "confidence" to "Model Confidence",
-        "sample_test_title" to "Quick Test (Sample Crops):"
+        "sample_test_title" to "Quick Test (Sample Crops):",
+        "tab_gallery" to "Community Gallery",
+        "gallery_title" to "Kisan Community Gallery",
+        "gallery_subtitle" to "See fellow farmers' crops & share your harvest",
+        "share_crop_photo" to "+ Share Your Crop Photo",
+        "all_farmers" to "All Farmers",
+        "my_shares" to "My Shared Photos",
+        "top_quality" to "Top Quality (A-Grade)",
+        "disease_alerts" to "Disease & Remedy Alerts",
+        "like_helpful" to "Helpful",
+        "comments" to "Comments & Advice",
+        "write_comment" to "Write your advice or ask a question...",
+        "post_comment" to "Post",
+        "share_to_community" to "🌐 Share to Community Gallery",
+        "shared_success" to "Your crop photo was shared to the community gallery!",
+        "farmer_name_label" to "Your Name (Farmer)",
+        "village_label" to "Village / Mandal",
+        "variety_label" to "Crop Variety / Seed",
+        "notes_label" to "Field Notes & Tips for Farmers"
     )
 }

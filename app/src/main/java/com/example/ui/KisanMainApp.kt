@@ -31,6 +31,7 @@ import androidx.compose.material.icons.filled.DataSaverOn
 import androidx.compose.material.icons.filled.HeadsetMic
 import androidx.compose.material.icons.filled.LocalShipping
 import androidx.compose.material.icons.filled.MonetizationOn
+import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material.icons.filled.Translate
 import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material3.Badge
@@ -205,6 +206,35 @@ fun KisanMainApp(
                     }
                 },
                 actions = {
+                    // Community Gallery Shortcut Button
+                    Surface(
+                        onClick = { showPhotoUploadScreen = true },
+                        shape = RoundedCornerShape(20.dp),
+                        color = AgriGreen,
+                        modifier = Modifier
+                            .padding(end = 6.dp)
+                            .testTag("top_bar_gallery_button")
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(horizontal = 9.dp, vertical = 5.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.PhotoLibrary,
+                                contentDescription = "Community Gallery",
+                                tint = Color.White,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = if (language == AppLanguage.TELUGU) "రైతుల గ్యాలరీ" else "Gallery",
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
+                            )
+                        }
+                    }
+
                     // Data saver indicator / toggle
                     Surface(
                         onClick = { viewModel.toggleDataSaver() },
@@ -329,10 +359,10 @@ fun KisanMainApp(
                         modifier = Modifier.padding(horizontal = 12.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(imageVector = Icons.Default.CameraAlt, contentDescription = "Upload Crop Photo")
+                        Icon(imageVector = Icons.Default.PhotoLibrary, contentDescription = "Community Crop Gallery")
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
-                            text = if (language == AppLanguage.TELUGU) "పంట ఫోటో" else "Crop Photo",
+                            text = if (language == AppLanguage.TELUGU) "రైతుల గ్యాలరీ" else "Crop Gallery",
                             style = MaterialTheme.typography.labelLarge,
                             fontWeight = FontWeight.Bold
                         )

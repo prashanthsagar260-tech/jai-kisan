@@ -13,6 +13,9 @@ import com.example.data.model.MandiPriceEntity
 import com.example.data.model.TransportVehicleOption
 import com.example.data.model.WeatherAdvisoryData
 import android.net.Uri
+import com.example.data.model.CommunityComment
+import com.example.data.model.CommunityCropPost
+import com.example.data.repository.CommunityGalleryRepository
 import com.example.data.repository.KisanRepository
 import com.example.ml.CropDiseaseMlPipeline
 import com.example.ml.DiseaseDiagnosisResult
@@ -71,6 +74,10 @@ class KisanViewModel(application: Application) : AndroidViewModel(application) {
     val coldStorages: StateFlow<List<ColdStorageEntity>>
     val photos: StateFlow<List<CropPhotoEntity>>
     val weather: StateFlow<WeatherAdvisoryData>
+
+    // Community Crop Gallery
+    private val communityRepo = CommunityGalleryRepository(application)
+    val communityPosts: StateFlow<List<CommunityCropPost>> = communityRepo.posts
 
     // Logistics state
     val selectedMandiLocation = MutableStateFlow<MandiLocationEntity?>(null)
@@ -442,5 +449,76 @@ class KisanViewModel(application: Application) : AndroidViewModel(application) {
     fun clearDiseaseDiagnosis() {
         diseaseDiagnosisResult.value = null
         diagnosingImageUri.value = null
+    }
+
+    // Community Gallery Operations
+    fun shareCropPhotoToCommunity(
+        cropName: String,
+        variety: String,
+        farmerName: String,
+        village: String,
+        district: String,
+        imageUrlOrUri: String,
+        notes: String,
+        grade: String,
+        attachDiagnosis: Boolean
+    ): CommunityCropPost {
+        val diag = if (attachDiagnosis) diseaseDiagnosisResult.value else null
+        return communityRepo.sharePhotoToCommunity(
+            farmerName = farmerName,
+            village = village,
+            district = district,
+            cropName = cropName,
+            variety = variety,
+            imageUrlOrUri = imageUrlOrUri,
+            notes = notes,
+            grade = grade,
+            diagnosticBadge = diag?.let { "${it.diseaseNameTe} (${it.severityLevelTe})" },
+            symptoms = diag?.symptomsTe,
+            organicAdvice = diag?.organicRemedyTe,
+            chemicalAdvice = diag?.chemicalRemedyTe
+        )
+    }
+
+    fun shareLocalCropPhotoToCommunity(
+        photo: CropPhotoEntity,
+        farmerName: String,
+        village: String,
+        district: String,
+        variety: String,
+        notes: String
+    ): CommunityCropPost {
+        val diagBadge = if (!photo.detectedDiseaseTe.isNullOrBlank()) {
+            "${photo.detectedDiseaseTe} (${photo.severityLevel ?: "గమనించబడింది"})"
+        } else {
+            "ఆరోగ్యవంతమైన పంట"
+        }
+
+        return communityRepo.sharePhotoToCommunity(
+            farmerName = farmerName,
+            village = village,
+            district = district,
+            cropName = photo.cropName,
+            variety = variety.ifBlank { "సాధారణ రకం" },
+            imageUrlOrUri = photo.imagePathOrUri,
+            notes = notes.ifBlank { photo.notes },
+            grade = photo.gradeTag,
+            diagnosticBadge = diagBadge,
+            symptoms = null,
+            organicAdvice = photo.remedyOrganicTe,
+            chemicalAdvice = photo.remedyChemicalTe
+        )
+    }
+
+    fun toggleCommunityPostLike(postId: String) {
+        communityRepo.toggleLike(postId)
+    }
+
+    fun addCommunityComment(postId: String, authorName: String, village: String, text: String) {
+        communityRepo.addComment(postId, authorName, village, text)
+    }
+
+    fun deleteCommunityPost(postId: String) {
+        communityRepo.deletePost(postId)
     }
 }
