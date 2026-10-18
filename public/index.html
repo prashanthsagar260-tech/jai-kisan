@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="te">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>జై కిసాన్ (Jai Kisan) - రైతు అగ్రి-టెక్ వేదిక</title>
+  <meta name="description" content="తెలంగాణ & ఆంధ్రప్రదేశ్ రైతుల కోసం ప్రత్యేకంగా రూపొందించిన అగ్రి-టెక్ యాప్. నేటి మార్కెట్ ధరలు, AI పంట డాక్టర్, మరియు రైతుల ఫోటో గ్యాలరీ.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #2E7D32;
+      --primary-light: #E8F5E9;
+      --secondary: #FFB300;
+      --dark: #1A1C19;
+      --surface: #FFFFFF;
+      --surface-variant: #F4F6F2;
+      --text-muted: #5F6368;
+      --border: #E0E4DC;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    }
+    body {
+      background-color: var(--surface-variant);
+      color: var(--dark);
+      line-height: 1.6;
+    }
+    header {
+      background: white;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 1rem 1.5rem;
+    }
+    .header-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: var(--dark);
+    }
+    .logo-badge {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: var(--primary);
+      display: grid;
+      place-items: center;
+      font-size: 1.25rem;
+    }
+    .logo-text h1 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      line-height: 1.1;
+    }
+    .logo-text p {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+    .header-actions {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+    }
+    .lang-pill {
+      background: var(--secondary);
+      color: black;
+      font-weight: 700;
+      font-size: 0.85rem;
+      padding: 0.4rem 0.85rem;
+      border-radius: 20px;
+      cursor: pointer;
+      border: none;
+      transition: transform 0.15s ease;
+    }
+    .lang-pill:hover {
+      transform: scale(1.05);
+    }
+    .hero {
+      max-width: 1100px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    .hero-card {
+      background: white;
+      border-radius: 24px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      box-shadow: 0 12px 36px rgba(0,0,0,0.06);
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+    }
+    @media (max-width: 850px) {
+      .hero-card {
+        grid-template-columns: 1fr;
+      }
+    }
+    .hero-content {
+      padding: 3rem 2.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .hero-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--primary-light);
+      color: var(--primary);
+      font-size: 0.85rem;
+      font-weight: 700;
+      padding: 0.35rem 0.85rem;
+      border-radius: 20px;
+      width: fit-content;
+      margin-bottom: 1.25rem;
+    }
+    .hero-title {
+      font-size: 2.25rem;
+      font-weight: 800;
+      color: var(--dark);
+      line-height: 1.2;
+      margin-bottom: 1rem;
+    }
+    .hero-desc {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      margin-bottom: 2rem;
+    }
+    .cta-row {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .btn-download {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: var(--primary);
+      color: white;
+      text-decoration: none;
+      padding: 0.9rem 1.75rem;
+      border-radius: 14px;
+      font-weight: 700;
+      font-size: 1.05rem;
+      box-shadow: 0 6px 18px rgba(46,125,50,0.3);
+      transition: all 0.2s ease;
+    }
+    .btn-download:hover {
+      background: #256628;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(46,125,50,0.4);
+    }
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: white;
+      color: var(--dark);
+      border: 1.5px solid var(--border);
+      padding: 0.9rem 1.5rem;
+      border-radius: 14px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: background 0.15s ease;
+    }
+    .btn-secondary:hover {
+      background: var(--surface-variant);
+    }
+    .hero-image-wrap {
+      background: #111;
+      position: relative;
+      min-height: 320px;
+    }
+    .hero-image-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .features-section {
+      max-width: 1100px;
+      margin: 3rem auto;
+      padding: 0 1.5rem;
+    }
+    .section-title {
+      font-size: 1.75rem;
+      font-weight: 800;
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+    .feature-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 1.75rem;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.03);
+    }
+    .feature-icon {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      display: inline-block;
+    }
+    .feature-card h3 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    .feature-card p {
+      color: var(--text-muted);
+      font-size: 0.92rem;
+    }
+    footer {
+      background: white;
+      border-top: 1px solid var(--border);
+      padding: 2.5rem 1.5rem;
+      text-align: center;
+      margin-top: 4rem;
+    }
+    .footer-desc {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      margin-top: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation -->
+  <header>
+    <div class="header-inner">
+      <a href="#" class="logo">
+        <div class="logo-badge">🌾</div>
+        <div class="logo-text">
+          <h1>జై కిసాన్ (Jai Kisan)</h1>
+          <p>రైతు అగ్రి-టెక్ వేదిక & కమ్యూనిటీ గ్యాలరీ</p>
+        </div>
+      </a>
+      <div class="header-actions">
+        <button class="lang-pill" onclick="toggleLang()" id="langBtn">తెలుగు / English</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <main class="hero">
+    <div class="hero-card">
+      <div class="hero-content">
+        <div class="hero-pill">✨ ఆఫ్‌లైన్ & డేటా ఆదా సదుపాయం</div>
+        <h2 class="hero-title" id="heroTitle">తెలంగాణ & ఆంధ్రప్రదేశ్ రైతుల కోసం అధికారిక వేదిక</h2>
+        <p class="hero-desc" id="heroDesc">
+          నేటి మార్కెట్ ధరలు (వరంగల్, గుంటూరు, ఖమ్మం, నిజామాబాద్), AI పంట డాక్టర్ (ఆకు తెగుళ్ల గుర్తింపు), మరియు తోటి రైతుల పంట ఫోటోల గ్యాలరీ ఒక్కచోటే.
+        </p>
+        <div class="cta-row">
+          <a href="/app-debug.apk" class="btn-download" download>
+            <span>📥</span>
+            <span id="dlBtnText">ఆండ్రాయిడ్ యాప్ డౌన్‌లోడ్ (APK)</span>
+          </a>
+          <a href="#features" class="btn-secondary" id="featBtnText">సదుపాయాలు చూడండి</a>
+        </div>
+      </div>
+      <div class="hero-image-wrap">
+        <img src="/kisan_gallery_hero.jpg" alt="Jai Kisan Farmer Community Gallery" onerror="this.src='https://images.unsplash.com/photo-1588252303782-cb80119abd6d?w=800&q=80'">
+      </div>
+    </div>
+  </main>
+
+  <!-- Key Features Grid -->
+  <section class="features-section" id="features">
+    <h2 class="section-title" id="featuresTitle">యాప్‌లోని ముఖ్యమైన సదుపాయాలు</h2>
+    <div class="features-grid">
+      
+      <div class="feature-card">
+        <div class="feature-icon">📸</div>
+        <h3 id="f1Title">రైతుల పంటల గ్యాలరీ (Community)</h3>
+        <p id="f1Desc">తోటి రైతులు పండించిన మిర్చి, పత్తి, వరి, టమాటా పంట ఫోటోలు చూడండి, లైక్ చేయండి, మీ పంట ఫోటోలను కూడా గ్యాలరీలో పంచుకోండి.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🔬</div>
+        <h3 id="f2Title">AI పంట డాక్టర్ (వ్యాధి నిర్ధారణ)</h3>
+        <p id="f2Desc">పంట ఆకు లేదా కాయ ఫోటో తీస్తే చాలు; Gemini Vision మోడల్ తెగులును గుర్తించి సేంద్రీయ మరియు రసాయన నివారణ మందులను సూచిస్తుంది.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">💰</div>
+        <h3 id="f3Title">లైవ్ మార్కెట్ ధరలు & అంచనాలు</h3>
+        <p id="f3Desc">ప్రధాన మండీల నేటి ధరలు, 7-రోజుల ధరల మార్పు ధోరణి మరియు రాబోయే వారపు ధర అంచనాలను ఆఫ్‌లైన్ లో కూడా పొందండి.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">❄️</div>
+        <h3 id="f4Title">శీతల గిడ్డంగి (Cold Storage)</h3>
+        <p id="f4Desc">పాడైపోయే మిర్చి, టమాటా నిల్వ కోసం సమీపంలోని కోల్డ్ స్టోరేజ్ అద్దె మరియు అందుబాటులో ఉన్న స్థలం వివరాలు.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🚚</div>
+        <h3 id="f5Title">రవాణా & చార్జీల క్యాలిక్యులేటర్</h3>
+        <p id="f5Desc">షేరింగ్ ఆటో, పికప్ ట్రక్, మరియు లారీ రవాణా చార్జీలు, దూరం మరియు సులభమైన బుకింగ్ అంచనాలు.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🔊</div>
+        <h3 id="f6Title">తెలుగు వాయిస్ హెల్ప్‌లైన్ (TTS)</h3>
+        <p id="f6Desc">ప్రతి సమాచారాన్ని తెలుగు వాయిస్ ద్వారా చదివి వినిపించే టెక్స్ట్-టు-స్పీచ్ సౌకర్యం.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p><strong>జై కిసాన్ (Jai Kisan)</strong> — Farmer Agri-Tech & Community Platform</p>
+    <p class="footer-desc">బిల్డ్ వెర్షన్ 1.0 • Android APK & Vercel Web Portal</p>
+  </footer>
+
+  <script>
+    let isTelugu = true;
+    const content = {
+      te: {
+        heroTitle: "తెలంగాణ & ఆంధ్రప్రదేశ్ రైతుల కోసం అధికారిక వేదిక",
+        heroDesc: "నేటి మార్కెట్ ధరలు (వరంగల్, గుంటూరు, ఖమ్మం, నిజామాబాద్), AI పంట డాక్టర్ (ఆకు తెగుళ్ల గుర్తింపు), మరియు తోటి రైతుల పంట ఫోటోల గ్యాలరీ ఒక్కచోటే.",
+        dlBtnText: "ఆండ్రాయిడ్ యాప్ డౌన్‌లోడ్ (APK)",
+        featBtnText: "సదుపాయాలు చూడండి",
+        featuresTitle: "యాప్‌లోని ముఖ్యమైన సదుపాయాలు",
+        f1Title: "రైతుల పంటల గ్యాలరీ (Community)",
+        f1Desc: "తోటి రైతులు పండించిన మిర్చి, పత్తి, వరి, టమాటా పంట ఫోటోలు చూడండి, లైక్ చేయండి, మీ పంట ఫోటోలను కూడా గ్యాలరీలో పంచుకోండి.",
+        f2Title: "AI పంట డాక్టర్ (వ్యాధి నిర్ధారణ)",
+        f2Desc: "పంట ఆకు లేదా కాయ ఫోటో తీస్తే చాలు; Gemini Vision మోడల్ తెగులును గుర్తించి సేంద్రీయ మరియు రసాయన నివారణ మందులను సూచిస్తుంది.",
+        f3Title: "లైవ్ మార్కెట్ ధరలు & అంచనాలు",
+        f3Desc: "ప్రధాన మండీల నేటి ధరలు, 7-రోజుల ధరల మార్పు ధోరణి మరియు రాబోయే వారపు ధర అంచనాలను ఆఫ్‌లైన్ లో కూడా పొందండి.",
+        f4Title: "శీతల గిడ్డంగి (Cold Storage)",
+        f4Desc: "పాడైపోయే మిర్చి, టమాటా నిల్వ కోసం సమీపంలోని కోల్డ్ స్టోరేజ్ అద్దె మరియు అందుబాటులో ఉన్న స్థలం వివరాలు.",
+        f5Title: "రవాణా & చార్జీల క్యాలిక్యులేటర్",
+        f5Desc: "షేరింగ్ ఆటో, పికప్ ట్రక్, మరియు లారీ రవాణా చార్జీలు, దూరం మరియు సులభమైన బుకింగ్ అంచనాలు.",
+        f6Title: "తెలుగు వాయిస్ హెల్ప్‌లైన్ (TTS)",
+        f6Desc: "ప్రతి సమాచారాన్ని తెలుగు వాయిస్ ద్వారా చదివి వినిపించే టెక్స్ట్-టు-స్పీచ్ సౌకర్యం."
+      },
+      en: {
+        heroTitle: "Empowering Farmers Across Telangana & Andhra Pradesh",
+        heroDesc: "Live mandi prices (Warangal, Guntur, Khammam, Nizamabad), AI Crop Doctor pathology scanner, and community crop harvest gallery all in one place.",
+        dlBtnText: "Download Android App (APK)",
+        featBtnText: "Explore Features",
+        featuresTitle: "Core Application Features",
+        f1Title: "Farmer Crop Photo Gallery",
+        f1Desc: "Explore fellow farmers' harvests of Chilli, Cotton, Paddy, and Tomato; like, comment, and share your own crop photos with the community.",
+        f2Title: "AI Crop Doctor (ML Pathology)",
+        f2Desc: "Snap or upload leaf photos. Gemini 3.8 Flash Vision analyzes pathogens and prescribes organic bio-remedies and chemical dosages.",
+        f3Title: "Live Mandi Prices & Forecasts",
+        f3Desc: "Real-time mandi prices across major hubs, 7-day trend analysis, and next-week price forecasts with offline SQLite persistence.",
+        f4Title: "Cold Storage Facility Finder",
+        f4Desc: "Locate nearby cold storage hubs for perishables like chilli and tomato, check live available capacities and monthly rental rates.",
+        f5Title: "Transport Logistics Calculator",
+        f5Desc: "Compare shared autos, mini vans, and cooperative lorries with instant distance-based fare estimations.",
+        f6Title: "Telugu Voice Speech (TTS)",
+        f6Desc: "Complete accessibility with natural Telugu text-to-speech audio readouts for rural farmers."
+      }
+    };
+
+    function toggleLang() {
+      isTelugu = !isTelugu;
+      const lang = isTelugu ? 'te' : 'en';
+      document.getElementById('heroTitle').innerText = content[lang].heroTitle;
+      document.getElementById('heroDesc').innerText = content[lang].heroDesc;
+      document.getElementById('dlBtnText').innerText = content[lang].dlBtnText;
+      document.getElementById('featBtnText').innerText = content[lang].featBtnText;
+      document.getElementById('featuresTitle').innerText = content[lang].featuresTitle;
+      document.getElementById('f1Title').innerText = content[lang].f1Title;
+      document.getElementById('f1Desc').innerText = content[lang].f1Desc;
+      document.getElementById('f2Title').innerText = content[lang].f2Title;
+      document.getElementById('f2Desc').innerText = content[lang].f2Desc;
+      document.getElementById('f3Title').innerText = content[lang].f3Title;
+      document.getElementById('f3Desc').innerText = content[lang].f3Desc;
+      document.getElementById('f4Title').innerText = content[lang].f4Title;
+      document.getElementById('f4Desc').innerText = content[lang].f4Desc;
+      document.getElementById('f5Title').innerText = content[lang].f5Title;
+      document.getElementById('f5Desc').innerText = content[lang].f5Desc;
+      document.getElementById('f6Title').innerText = content[lang].f6Title;
+      document.getElementById('f6Desc').innerText = content[lang].f6Desc;
+      document.getElementById('langBtn').innerText = isTelugu ? 'తెలుగు / English' : 'English / తెలుగు';
+    }
+  </script>
+</body>
+</html>

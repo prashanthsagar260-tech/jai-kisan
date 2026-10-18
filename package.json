@@ -1,0 +1,9 @@
+{
+  "name": "jai-kisan-agrihq",
+  "version": "1.0.0",
+  "description": "Jai Kisan (జై కిసాన్) - Farmer Agri-Tech Platform & Community Gallery",
+  "private": true,
+  "scripts": {
+    "build": "echo 'Vercel static build complete'"
+  }
+}
